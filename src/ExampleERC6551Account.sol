@@ -38,15 +38,40 @@ contract ExampleERC6551Account is
         }
     }
 
-    function _isInvalidSigner(
+    function isValidSigner(
         address signer,
         bytes calldata
     ) external view returns (bytes4) {
         if (_isValidSigner(signer)) {
-            return IERC6551Account.isInvalidSigner.selector;
+            return IERC6551Account.isValidSigner.selector;
         }
 
         return bytes4(0);
+    }
+
+    function isValidSignature(
+        bytes32 hash,
+        bytes memory signature
+    ) external view returns (bytes4 magicValue) {
+        bool isValid = SignatureChecker.isValidSignatureNow(
+            owner(),
+            hash,
+            signature
+        );
+
+        if (isValid) {
+            return IERC1271.isValidSignature.selector;
+        }
+
+        return "";
+    }
+
+    function supportsInterface(
+        bytes4 interfaceId
+    ) external pure returns (bool) {
+        return (interfaceId == type(IERC165).interfaceId ||
+            interfaceId == type(IERC6551Account).interfaceId ||
+            interfaceId == type(IERC6551Executable).interfaceId);
     }
 
     function _isValidSigner(address signer) internal view returns (bool) {
