@@ -1,11 +1,18 @@
 pragma solidity ^0.8.0;
 
-import "openzeppelin-contracts/utils/introspection/IERC165.sol";
-import "openzeppelin-contracts/token/ERC721/IERC721.sol";
-import "openzeppelin-contracts/interfaces/IERC1271.sol";
-import "openzeppelin-contracts/utils/cryptography/SignatureChecker.sol";
+import "openzeppelin-contracts/contracts/interfaces/IERC165.sol";
+import "openzeppelin-contracts/contracts/interfaces/IERC721.sol";
+import "openzeppelin-contracts/contracts/interfaces/IERC1271.sol";
+import "openzeppelin-contracts/contracts/utils/cryptography/SignatureChecker.sol";
+import "./IERC6551Account.sol";
+import "./IERC6551Executable.sol";
 
-contract ExampleERC6551Account is IERC165, IERC721, IERC1271, SignatureChecker {
+contract ExampleERC6551Account is
+    IERC165,
+    IERC1271,
+    IERC6551Account,
+    IERC6551Executable
+{
     uint256 public state;
 
     receive() external payable {}
@@ -16,7 +23,7 @@ contract ExampleERC6551Account is IERC165, IERC721, IERC1271, SignatureChecker {
         bytes calldata data,
         uint256 operation
     ) external payable returns (bytes memory result) {
-        require(_isInvalidSigner(msg.sender), "Invalid signer");
+        require(_isValidSigner(msg.sender), "Invalid signer");
         require(operation == 0, "Invalid operation");
 
         ++state;
@@ -35,7 +42,7 @@ contract ExampleERC6551Account is IERC165, IERC721, IERC1271, SignatureChecker {
         address signer,
         bytes calldata
     ) external view returns (bytes4) {
-        if (_isInvalidSigner(signer)) {
+        if (_isValidSigner(signer)) {
             return IERC6551Account.isInvalidSigner.selector;
         }
 
