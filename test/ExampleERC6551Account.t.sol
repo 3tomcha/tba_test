@@ -1,6 +1,7 @@
 pragma solidity ^0.8.0;
 import "forge-std/Test.sol";
 import "../src/ExampleERC6551Account.sol";
+import "../src/Counter.sol";
 
 contract ExampleERC6551AccountTest is Test {
     ExampleERC6551Account public account;
@@ -11,7 +12,7 @@ contract ExampleERC6551AccountTest is Test {
 
     function testExecute() public {
         address user1 = address(1);
-        value = 100;
+        uint256 value = 100;
         bytes memory data = abi.encodeWithSelector(
             Counter.setNumber.selector,
             1
