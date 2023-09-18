@@ -39,14 +39,11 @@ contract ERC6551Registry is IERC6551Registry {
             tokenId,
             salt
         );
-
         address _account = Create2.computeAddress(
             bytes32(salt),
             keccak256(code)
         );
-
-        if (_account.code.length != 0) return _account;
-
+        if (_account.code.length != 0) revert("Account already exists");
         emit AccountCreated(
             _account,
             implementation,
@@ -55,23 +52,18 @@ contract ERC6551Registry is IERC6551Registry {
             tokenId,
             salt
         );
-
         assembly {
             _account := create2(0, add(code, 0x20), mload(code), salt)
         }
-
-        if (_account == address(0)) revert AccountCreationFailed();
-
+        if (_account == address(0)) revert("Account creation failed");
         if (initData.length != 0) {
             (bool success, bytes memory result) = _account.call(initData);
-
             if (!success) {
                 assembly {
                     revert(add(result, 32), mload(result))
                 }
             }
         }
-
         return _account;
     }
 
