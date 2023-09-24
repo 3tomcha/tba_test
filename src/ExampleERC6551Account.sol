@@ -14,6 +14,7 @@ contract ExampleERC6551Account is
     IERC6551Executable
 {
     uint256 public state;
+    address private entryPointContract;
 
     receive() external payable {}
 
@@ -75,7 +76,7 @@ contract ExampleERC6551Account is
     }
 
     function _isValidSigner(address signer) internal view returns (bool) {
-        return signer == owner();
+        return signer == owner() || signer == entryPointContract;
     }
 
     function token() public view returns (uint256, address, uint256) {
@@ -92,5 +93,17 @@ contract ExampleERC6551Account is
         (uint256 chainId, address tokenContract, uint256 tokenId) = token();
         if (chainId != block.chainid) return address(0);
         return IERC721(tokenContract).ownerOf(tokenId);
+    }
+
+    function entryPoint() public view returns (address) {
+        return entryPointContract;
+    }
+
+    modifier onlyAdminOrEntryPoint() {
+        require(
+            msg.sender == address(entryPoint()) || msg.sender == owner(),
+            "Only admin or entry point"
+        );
+        _;
     }
 }
