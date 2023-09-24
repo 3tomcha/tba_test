@@ -16,6 +16,10 @@ contract ExampleERC6551Account is
     uint256 public state;
     address private entryPointContract;
 
+    constructor(address _entryPointContract) {
+        entryPointContract = _entryPointContract;
+    }
+
     receive() external payable {}
 
     function execute(
