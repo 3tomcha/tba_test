@@ -6,6 +6,7 @@ import "openzeppelin-contracts/contracts/interfaces/IERC1271.sol";
 import "openzeppelin-contracts/contracts/utils/cryptography/SignatureChecker.sol";
 import "./IERC6551Account.sol";
 import "./IERC6551Executable.sol";
+import "forge-std/console.sol";
 
 contract ExampleERC6551Account is
     IERC165,
@@ -14,10 +15,10 @@ contract ExampleERC6551Account is
     IERC6551Executable
 {
     uint256 public state;
-    address private entryPointContract;
+    address public entryPoint;
 
     constructor(address _entryPointContract) {
-        entryPointContract = _entryPointContract;
+        entryPoint = _entryPointContract;
     }
 
     receive() external payable {}
@@ -80,7 +81,11 @@ contract ExampleERC6551Account is
     }
 
     function _isValidSigner(address signer) internal view returns (bool) {
-        return signer == owner() || signer == entryPointContract;
+        console.log("signer: %s", signer);
+        console.log("owner: %s", owner());
+        console.log("entryPoint: %s", entryPoint);
+        // return true;
+        return signer == owner();
     }
 
     function token() public view returns (uint256, address, uint256) {
@@ -97,17 +102,5 @@ contract ExampleERC6551Account is
         (uint256 chainId, address tokenContract, uint256 tokenId) = token();
         if (chainId != block.chainid) return address(0);
         return IERC721(tokenContract).ownerOf(tokenId);
-    }
-
-    function entryPoint() public view returns (address) {
-        return entryPointContract;
-    }
-
-    modifier onlyAdminOrEntryPoint() {
-        require(
-            msg.sender == address(entryPoint()) || msg.sender == owner(),
-            "Only admin or entry point"
-        );
-        _;
     }
 }

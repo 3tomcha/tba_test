@@ -31,6 +31,10 @@ contract MyContract {
             0,
             ""
         );
+
+        // tokenBoundAccountにEtherを送金
+        payable(tokenBoundAccount).transfer(1 ether);
+
         IERC6551Executable executableAccountInstance = IERC6551Executable(
             tokenBoundAccount
         );

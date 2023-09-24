@@ -15,7 +15,7 @@ contract ExampleERC6551AccountTest is Test {
 
     function setUp() public {
         registry = new ERC6551Registry();
-        implementation = new ExampleERC6551Account();
+        implementation = new ExampleERC6551Account(address(this));
     }
 
     function testDeploy() public {
