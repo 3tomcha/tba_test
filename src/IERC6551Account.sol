@@ -1,3 +1,5 @@
+pragma solidity ^0.8.21;
+
 interface IERC6551Account {
     receive() external payable;
 

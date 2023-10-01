@@ -6,7 +6,6 @@ import "openzeppelin-contracts/contracts/interfaces/IERC1271.sol";
 import "openzeppelin-contracts/contracts/utils/cryptography/SignatureChecker.sol";
 import "./IERC6551Account.sol";
 import "./IERC6551Executable.sol";
-import "forge-std/console.sol";
 
 contract ExampleERC6551Account is
     IERC165,
@@ -31,7 +30,6 @@ contract ExampleERC6551Account is
         tokenContract = _tokenContract;
         tokenId = _tokenId;
         entryPoint = _entryPoint;
-        console.log("constructortokenContract: %s", tokenContract);
     }
 
     receive() external payable {}
@@ -94,9 +92,6 @@ contract ExampleERC6551Account is
     }
 
     function _isValidSigner(address signer) internal view returns (bool) {
-        console.log("signer: %s", signer);
-        console.log("owner: %s", owner());
-        console.log("entryPoint: %s", entryPoint);
         return signer == owner() || signer == entryPoint;
     }
 
@@ -106,11 +101,6 @@ contract ExampleERC6551Account is
 
     function owner() public view returns (address) {
         if (chainId != block.chainid) return address(0);
-        console.log("ownertokenContract: %s", tokenContract);
-        // console.log(
-        //     "tokenContractowner: %s",
-        //     IERC721(tokenContract).ownerOf(tokenId)
-        // );
         return IERC721(tokenContract).ownerOf(tokenId);
     }
 }
