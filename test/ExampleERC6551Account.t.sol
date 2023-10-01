@@ -15,7 +15,12 @@ contract ExampleERC6551AccountTest is Test {
 
     function setUp() public {
         registry = new ERC6551Registry();
-        implementation = new ExampleERC6551Account(address(this));
+        implementation = new ExampleERC6551Account(
+            31337,
+            address(nft),
+            1,
+            address(this)
+        );
     }
 
     function testDeploy() public {
@@ -42,6 +47,7 @@ contract ExampleERC6551AccountTest is Test {
 
     function testExecute() public {
         nft.mint(vm.addr(1), 1);
+        assertEq(nft.ownerOf(1), vm.addr(1));
         address account = registry.createAccount(
             address(implementation),
             block.chainid,

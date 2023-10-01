@@ -15,10 +15,23 @@ contract ExampleERC6551Account is
     IERC6551Executable
 {
     uint256 public state;
-    address public entryPoint;
 
-    constructor(address _entryPointContract) {
-        entryPoint = _entryPointContract;
+    uint256 public immutable chainId;
+    address public immutable tokenContract;
+    uint256 public immutable tokenId;
+    address public immutable entryPoint;
+
+    constructor(
+        uint256 _chainId,
+        address _tokenContract,
+        uint256 _tokenId,
+        address _entryPoint
+    ) {
+        chainId = _chainId;
+        tokenContract = _tokenContract;
+        tokenId = _tokenId;
+        entryPoint = _entryPoint;
+        console.log("constructortokenContract: %s", tokenContract);
     }
 
     receive() external payable {}
@@ -84,23 +97,20 @@ contract ExampleERC6551Account is
         console.log("signer: %s", signer);
         console.log("owner: %s", owner());
         console.log("entryPoint: %s", entryPoint);
-        // return true;
-        return signer == owner();
+        return signer == owner() || signer == entryPoint;
     }
 
     function token() public view returns (uint256, address, uint256) {
-        bytes memory footer = new bytes(0x60);
-
-        assembly {
-            extcodecopy(address(), add(footer, 0x20), 0x4d, 0x60)
-        }
-
-        return abi.decode(footer, (uint256, address, uint256));
+        return (chainId, tokenContract, tokenId);
     }
 
     function owner() public view returns (address) {
-        (uint256 chainId, address tokenContract, uint256 tokenId) = token();
         if (chainId != block.chainid) return address(0);
+        console.log("ownertokenContract: %s", tokenContract);
+        // console.log(
+        //     "tokenContractowner: %s",
+        //     IERC721(tokenContract).ownerOf(tokenId)
+        // );
         return IERC721(tokenContract).ownerOf(tokenId);
     }
 }
