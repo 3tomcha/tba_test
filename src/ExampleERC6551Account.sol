@@ -15,23 +15,6 @@ contract ExampleERC6551Account is
 {
     uint256 public state;
 
-    uint256 public immutable chainId;
-    address public immutable tokenContract;
-    uint256 public immutable tokenId;
-    address public immutable entryPoint;
-
-    constructor(
-        uint256 _chainId,
-        address _tokenContract,
-        uint256 _tokenId,
-        address _entryPoint
-    ) {
-        chainId = _chainId;
-        tokenContract = _tokenContract;
-        tokenId = _tokenId;
-        entryPoint = _entryPoint;
-    }
-
     receive() external payable {}
 
     function execute(
@@ -92,14 +75,21 @@ contract ExampleERC6551Account is
     }
 
     function _isValidSigner(address signer) internal view returns (bool) {
-        return signer == owner() || signer == entryPoint;
+        return signer == owner();
     }
 
     function token() public view returns (uint256, address, uint256) {
-        return (chainId, tokenContract, tokenId);
+        bytes memory footer = new bytes(0x60);
+
+        assembly {
+            extcodecopy(address(), add(footer, 0x20), 0x4d, 0x60)
+        }
+
+        return abi.decode(footer, (uint256, address, uint256));
     }
 
     function owner() public view returns (address) {
+        (uint256 chainId, address tokenContract, uint256 tokenId) = token();
         if (chainId != block.chainid) return address(0);
         return IERC721(tokenContract).ownerOf(tokenId);
     }
