@@ -3,10 +3,9 @@ import { createWeb3Modal, defaultWagmiConfig } from '@web3modal/wagmi/react'
 import { arbitrum, localhost } from 'wagmi/chains'
 import { ExampleERC6551AccountAbi } from "./abi/ExampleERC6551Account.abi";
 import { createPublicClient, http, custom } from 'viem'
-import { getContract } from '@wagmi/core';
 
 const projectId = '2bfeddcc836c3949daf198f82ac19134'
-const accountAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"
+const accountAddress = "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9"
 
 const metadata = {
   name: 'Web3Modal',
@@ -42,10 +41,10 @@ const getBalance = async () => {
 
 const getContract_ = async () => {
   const { request } = await publicClient.simulateContract({
-    address: '0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2',
+    address: accountAddress,
     abi: ExampleERC6551AccountAbi,
     functionName: 'execute',
-    args: [account2, 1000, " ", 1],
+    args: [account2, 1000, "", 1],
     account
   })
   await walletClient.writeContract(request);
