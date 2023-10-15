@@ -16,12 +16,7 @@ contract MyContractTest is Test {
     function setUp() public {
         registry = new ERC6551Registry();
         nft = new MockERC721();
-        implementation = new ExampleERC6551Account(
-            31337,
-            address(nft),
-            1,
-            address(this)
-        );
+        implementation = new ExampleERC6551Account();
     }
 
     function testCreateAndExecute() public {
